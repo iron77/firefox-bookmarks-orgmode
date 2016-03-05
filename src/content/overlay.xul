@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://bookmarks-orgmode/locale/bookmarks-orgmode.dtd">
+
+<overlay id="bookmarks-orgmode-contextmenu" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <menupopup id="placesContext">
+        <menuitem id="bmorg-cx-copyasorg"
+            label="&bookmarks-orgmode.contextCopyAsOrg;"  
+            oncommand="copyBookmarksAsOrgmode.copyAsOrg()"
+            insertafter="placesContext_copy" />
+    </menupopup>
+    
+    <script type="application/x-javascript" src="chrome://bookmarks-orgmode/content/bookmarks-orgmode.js" />
+</overlay>

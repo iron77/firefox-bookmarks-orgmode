@@ -1,0 +1,5 @@
+content	bookmarks-orgmode	content/
+locale	bookmarks-orgmode	en-US	locale/en-US/
+overlay	chrome://browser/content/browser.xul	chrome://bookmarks-orgmode/content/overlay.xul
+overlay chrome://browser/content/places/places.xul  chrome://bookmarks-orgmode/content/overlay.xul
+overlay chrome://browser/content/bookmarks/bookmarksPanel.xul  chrome://bookmarks-orgmode/content/overlay.xul
