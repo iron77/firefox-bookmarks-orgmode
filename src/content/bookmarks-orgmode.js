@@ -10,7 +10,7 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             if ( ! placesContext ) return;
             placesContext.addEventListener("popuphiding", function(event) {
                 if ( event.target.triggerNode.id == 'PlacesToolbarItems' ) {
-                    event.target.ownerDocument.getElementById("bmorg-cx-copyasorg").hidden = false;
+                    event.target.ownerDocument.getElementById("placesContext_copyAsOrg").hidden = false;
                 }
             }); 
         },

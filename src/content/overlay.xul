@@ -4,7 +4,7 @@
 
 <overlay id="bookmarks-orgmode-contextmenu" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <menupopup id="placesContext">
-        <menuitem id="bmorg-cx-copyasorg"
+        <menuitem id="placesContext_copyAsOrg"
             label="&bookmarks-orgmode.contextCopyAsOrg;"  
             oncommand="copyBookmarksAsOrgmode.copyAsOrg()"
             insertafter="placesContext_copy" />
