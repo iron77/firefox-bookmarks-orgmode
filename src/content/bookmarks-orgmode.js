@@ -29,7 +29,7 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             }
             orgString += ' ';
             
-            var nodeTitle = placesNode.title; 
+            var nodeTitle = placesNode.title.replace(/\n+/g, " "); 
 			if (PlacesUtils.nodeIsFolder(placesNode) || placesNode.hasOwnProperty('childCount')) { 
                 orgString += nodeTitle + "\n";    
 
