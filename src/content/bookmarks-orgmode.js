@@ -30,27 +30,27 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             orgString += ' ';
             
             var nodeTitle = placesNode.title.replace(/\n+/g, " "); 
-			if (PlacesUtils.nodeIsFolder(placesNode) || placesNode.hasOwnProperty('childCount')) { 
+            if (PlacesUtils.nodeIsFolder(placesNode) || placesNode.hasOwnProperty('childCount')) { 
                 orgString += nodeTitle + "\n";    
 
                 var folderUri = placesNode.uri.replace(/place:folder=([^&]+).*/g, "$1");
                 if ( folderUri == 'TOOLBAR' ) {
-                	var folderID = PlacesUtils.toolbarFolderId;
+                    var folderID = PlacesUtils.toolbarFolderId;
                 }
                 else {
-                	var folderID = placesNode.itemId;
+                    var folderID = placesNode.itemId;
                 }
                
                 var children = PlacesUtils.getFolderContents(folderID).root;
                 for ( var i = 0; i < children.childCount; i++ ) {
                     orgString += this._getOrgStringForNode(children.getChild(i), level+1) + "\n";
                 }
-			}
-			else if ( PlacesUtils.nodeIsBookmark(placesNode) ) {
+            }
+            else if ( PlacesUtils.nodeIsBookmark(placesNode) ) {
                 var bookmarkUrl = PlacesUtils.bookmarks.getBookmarkURI(placesNode.itemId).spec;
                 nodeTitle = nodeTitle.replace(/\[/g, "(").replace(/\]/g, ")");
                 orgString += "[[" + bookmarkUrl + "][" + nodeTitle + "]]";
-			}
+            }
 
             return orgString;
         },
