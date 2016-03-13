@@ -48,7 +48,7 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
 			}
 			else if ( PlacesUtils.nodeIsBookmark(placesNode) ) {
                 var bookmarkUrl = PlacesUtils.bookmarks.getBookmarkURI(placesNode.itemId).spec;
-                nodeTitle = nodeTitle.replace("[", "(").replace("]", ")");
+                nodeTitle = nodeTitle.replace(/\[/g, "(").replace(/\]/g, ")");
                 orgString += "[[" + bookmarkUrl + "][" + nodeTitle + "]]";
 			}
 
