@@ -1,2 +1,3 @@
-<!ENTITY bookmarks-orgmode.contextCopyAsOrg "Copy as Org">
+<!ENTITY bookmarks-orgmode.copyAsOrg "Copy as Org">
+<!ENTITY bookmarks-orgmode.pasteFromOrg "Paste from Org">
 

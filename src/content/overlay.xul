@@ -5,9 +5,14 @@
 <overlay id="bookmarks-orgmode-contextmenu" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <menupopup id="placesContext">
         <menuitem id="placesContext_copyAsOrg"
-            label="&bookmarks-orgmode.contextCopyAsOrg;"  
+            label="&bookmarks-orgmode.copyAsOrg;"
             oncommand="copyBookmarksAsOrgmode.copyAsOrg()"
             insertafter="placesContext_copy" />
+
+        <menuitem id="placesContext_pasteFromOrg"
+            label="&bookmarks-orgmode.pasteFromOrg;"
+            oncommand="copyBookmarksAsOrgmode.pasteFromOrg()"
+            insertafter="placesContext_paste" />
     </menupopup>
     
     <script type="application/x-javascript" src="chrome://bookmarks-orgmode/content/bookmarks-orgmode.js" />
