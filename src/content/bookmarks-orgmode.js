@@ -14,7 +14,7 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             }); 
             placesContext.addEventListener("popupshowing", function(event) {
                 if ( event.target.triggerNode.id != 'PlacesToolbarItems' ) return;
-                var item_pasteFromOrg = event.target.ownerDocument.getElementById("placesContext_pasteFromOrg")
+                var item_pasteFromOrg = event.target.ownerDocument.getElementById("placesContext_pasteFromOrg");
                 item_pasteFromOrg.hidden   = false;
                 item_pasteFromOrg.disabled = false;
             });
@@ -70,10 +70,22 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             gClipboardHelper.copyString(orgString);
         },
 
+        _getDataFromClipboard: function() {
+            var trans = Cc["@mozilla.org/widget/transferable;1"].createInstance(Ci.nsITransferable);
+            trans.init(null)
+            trans.addDataFlavor("text/unicode");
+
+            Services.clipboard.getData(trans, Services.clipboard.kGlobalClipboard);
+            var str       = {};
+            var strLength = {};
+            trans.getTransferData("text/unicode", str, strLength);
+
+            return str ? str.value.QueryInterface(Ci.nsISupportsString).data : '';
+        },
 
         pasteFromOrg: function() {
-            alert('Pasting...');
-        },
+            alert('Content from clipboard: '+this._getDataFromClipboard());
+        }
         
     };
 
