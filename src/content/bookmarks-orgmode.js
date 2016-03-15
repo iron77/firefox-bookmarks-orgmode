@@ -82,11 +82,85 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
 
             return str ? str.value.QueryInterface(Ci.nsISupportsString).data : '';
         },
+        
+        maybeParseOrgLink: function(orgString) {
+            var parseOrgLink = orgString.trim().match(/^\[\[(.+)\]\[(.+)\]\]$/);
+            return parseOrgLink ? { "title": parseOrgLink[2], "url": parseOrgLink[1] } : false;
+        },
+
+        maybeParseOrgFolder: function(orgString) {
+            var matchOrgFolder = orgString.trim().match(/^(?!\*+ )(.+)(\n(\*+ ((.|\n)+)))?/);
+            return matchOrgFolder ? {
+                "name":    matchOrgFolder[1], 
+                "content": typeof matchOrgFolder[3] !== "undefined" ? matchOrgFolder[3] : null
+            } : false;
+        },
+
+        maybeParseOrgOutline: function(orgString) {
+            orgString = orgString.trim(); 
+            var matchFirstOutline = orgString.match(/^(\*+) .+/);
+            if (!matchFirstOutline) return false;
+            var splitCurrentLevels = ("\n"+orgString).split(new RegExp("\n\\*{"+matchFirstOutline[1].length+"} ", "g"));
+            splitCurrentLevels.shift();
+            return splitCurrentLevels;
+        },
+
+        parseOrgString: function(orgString, pasteToFolderId) {
+            var link = this.maybeParseOrgLink(orgString);
+            if (link) {
+                //console.log("<a href='"+link.url+"'>"+link.title+"</a>");
+
+
+                var bookmarks = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"]
+                                          .getService(Components.interfaces.nsINavBookmarksService);
+                //var newFolderId
+                //var newFolderId = bookmarks.createFolder(pasteToFolderId, folder.name, bookmarks.DEFAULT_INDEX);
+
+                var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                                    .getService(Components.interfaces.nsIIOService);
+                var uri = ios.newURI(link.url, null, null);
+                var newBkmkId = bookmarks.insertBookmark(pasteToFolderId, uri, bookmarks.DEFAULT_INDEX, link.title);
+
+
+                return;
+            }
+            var folder = this.maybeParseOrgFolder(orgString);
+            if (folder) {
+                var bookmarks = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"]
+                                          .getService(Components.interfaces.nsINavBookmarksService);
+                //var newFolderId
+                var newFolderId = bookmarks.createFolder(pasteToFolderId, folder.name, bookmarks.DEFAULT_INDEX);
+
+                //console.log(folder.name);
+                if (folder.content) {
+                    this.parseOrgString(folder.content, newFolderId);
+                }
+                return;
+            }
+            var outline = this.maybeParseOrgOutline(orgString);
+            if (outline) {
+                for ( var i=0; i<outline.length; i++ ) {
+                    this.parseOrgString(outline[i], pasteToFolderId);
+                }
+            }
+        },
 
         pasteFromOrg: function() {
-            alert('Content from clipboard: '+this._getDataFromClipboard());
-        }
-        
+            var placesNode = PlacesUIUtils.getViewForNode(document.popupNode).selectedNode;
+            if (placesNode) {
+                var folderID = placesNode.itemId;
+            }
+            else if (document.popupNode.id == 'PlacesToolbarItems') {
+                var folderID = PlacesUtils.toolbarFolderId;
+            }
+            else {
+                console.log(document.popupNode);
+                return;
+            }
+
+            this.parseOrgString(this._getDataFromClipboard(), folderID);  
+        }        
+
     };
 
     window.addEventListener("load", function load(event) {
