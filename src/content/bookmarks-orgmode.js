@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 // use strict?
 if (typeof copyBookmarksAsOrgmode == "undefined") {
@@ -11,7 +11,7 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             placesContext.addEventListener("popuphiding", function(event) {
                 if ( event.target.triggerNode.id != 'PlacesToolbarItems' ) return;
                 event.target.ownerDocument.getElementById("placesContext_copyAsOrg").hidden = false;
-            }); 
+            });
             placesContext.addEventListener("popupshowing", function(event) {
                 if ( event.target.triggerNode.id != 'PlacesToolbarItems' ) return;
                 var item_pasteFromOrg = event.target.ownerDocument.getElementById("placesContext_pasteFromOrg");
@@ -29,14 +29,14 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             }
 
             var orgString = '';
-            for ( var i = 0; i < level; i ++ ) { 
-                orgString += '*'; 
+            for ( var i = 0; i < level; i ++ ) {
+                orgString += '*';
             }
             orgString += ' ';
-            
-            var nodeTitle = placesNode.title.replace(/\n+/g, " "); 
-            if (PlacesUtils.nodeIsFolder(placesNode) || placesNode.hasOwnProperty('childCount')) { 
-                orgString += nodeTitle + "\n";    
+
+            var nodeTitle = placesNode.title.replace(/\n+/g, " ");
+            if (PlacesUtils.nodeIsFolder(placesNode) || placesNode.hasOwnProperty('childCount')) {
+                orgString += nodeTitle + "\n";
 
                 var folderUri = placesNode.uri.replace(/place:folder=([^&]+).*/g, "$1");
                 if ( folderUri == 'TOOLBAR' ) {
@@ -45,7 +45,7 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
                 else {
                     var folderID = placesNode.itemId;
                 }
-               
+
                 var children = PlacesUtils.getFolderContents(folderID).root;
                 for ( var i = 0; i < children.childCount; i++ ) {
                     orgString += this._getOrgStringForNode(children.getChild(i), level+1) + "\n";
@@ -82,7 +82,7 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
 
             return str ? str.value.QueryInterface(Ci.nsISupportsString).data : '';
         },
-        
+
         maybeParseOrgLink: function(orgString) {
             var parseOrgLink = orgString.trim().match(/^\[\[(.+)\]\[(.+)\]\]$/);
             return parseOrgLink ? { "title": parseOrgLink[2], "url": parseOrgLink[1] } : false;
@@ -91,13 +91,13 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
         maybeParseOrgFolder: function(orgString) {
             var matchOrgFolder = orgString.trim().match(/^(?!\*+ )(.+)(\n(\*+ ((.|\n)+)))?/);
             return matchOrgFolder ? {
-                "name":    matchOrgFolder[1], 
+                "name":    matchOrgFolder[1],
                 "content": typeof matchOrgFolder[3] !== "undefined" ? matchOrgFolder[3] : null
             } : false;
         },
 
         maybeParseOrgOutline: function(orgString) {
-            orgString = orgString.trim(); 
+            orgString = orgString.trim();
             var matchFirstOutline = orgString.match(/^(\*+) .+/);
             if (!matchFirstOutline) return false;
             var splitCurrentLevels = ("\n"+orgString).split(new RegExp("\n\\*{"+matchFirstOutline[1].length+"} ", "g"));
@@ -106,32 +106,22 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
         },
 
         parseOrgString: function(orgString, pasteToFolderId) {
+            if (typeof this.bookmarksService === "undefined") {
+                this.bookmarksService = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"]
+                                                  .getService(Components.interfaces.nsINavBookmarksService);
+                this.ioService        = Components.classes["@mozilla.org/network/io-service;1"]
+                                                  .getService(Components.interfaces.nsIIOService);
+            }
+
             var link = this.maybeParseOrgLink(orgString);
             if (link) {
-                //console.log("<a href='"+link.url+"'>"+link.title+"</a>");
-
-
-                var bookmarks = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"]
-                                          .getService(Components.interfaces.nsINavBookmarksService);
-                //var newFolderId
-                //var newFolderId = bookmarks.createFolder(pasteToFolderId, folder.name, bookmarks.DEFAULT_INDEX);
-
-                var ios = Components.classes["@mozilla.org/network/io-service;1"]
-                                    .getService(Components.interfaces.nsIIOService);
-                var uri = ios.newURI(link.url, null, null);
-                var newBkmkId = bookmarks.insertBookmark(pasteToFolderId, uri, bookmarks.DEFAULT_INDEX, link.title);
-
-
+                this.bookmarksService.insertBookmark(pasteToFolderId, this.ioService.newURI(link.url, null, null),
+                    this.bookmarksService.DEFAULT_INDEX, link.title);
                 return;
             }
             var folder = this.maybeParseOrgFolder(orgString);
             if (folder) {
-                var bookmarks = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"]
-                                          .getService(Components.interfaces.nsINavBookmarksService);
-                //var newFolderId
-                var newFolderId = bookmarks.createFolder(pasteToFolderId, folder.name, bookmarks.DEFAULT_INDEX);
-
-                //console.log(folder.name);
+                var newFolderId = this.bookmarksService.createFolder(pasteToFolderId, folder.name, this.bookmarksService.DEFAULT_INDEX);
                 if (folder.content) {
                     this.parseOrgString(folder.content, newFolderId);
                 }
@@ -158,13 +148,13 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
                 return;
             }
 
-            this.parseOrgString(this._getDataFromClipboard(), folderID);  
-        }        
+            this.parseOrgString(this._getDataFromClipboard(), folderID);
+        }
 
     };
 
     window.addEventListener("load", function load(event) {
-        window.removeEventListener("load", load); 
-        copyBookmarksAsOrgmode.init();  
+        window.removeEventListener("load", load);
+        copyBookmarksAsOrgmode.init();
     });
 };
