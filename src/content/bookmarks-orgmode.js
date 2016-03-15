@@ -15,8 +15,10 @@ if (typeof copyBookmarksAsOrgmode == "undefined") {
             placesContext.addEventListener("popupshowing", function(event) {
                 if ( event.target.triggerNode.id != 'PlacesToolbarItems' ) return;
                 var item_pasteFromOrg = event.target.ownerDocument.getElementById("placesContext_pasteFromOrg");
-                item_pasteFromOrg.hidden   = false;
-                item_pasteFromOrg.disabled = false;
+                var clipboard = copyBookmarksAsOrgmode._getDataFromClipboard();
+                var showPaste = (copyBookmarksAsOrgmode.maybeParseOrgLink(clipboard) || copyBookmarksAsOrgmode.maybeParseOrgOutline(clipboard));                
+                item_pasteFromOrg.hidden   = !showPaste;
+                item_pasteFromOrg.disabled = !showPaste;
             });
         },
 
