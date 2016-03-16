@@ -123,12 +123,13 @@ var copyBookmarksAsOrgmode = (function() {
             });
 
             placesContext.addEventListener("popupshowing", function(event) {
-                if ( event.target.triggerNode.id != "PlacesToolbarItems" ) return;
-                var item_pasteFromOrg = event.target.ownerDocument.getElementById("placesContext_pasteFromOrg");
-                var clipboard = getDataFromClipboard();
-                var showPaste = maybeParseOrgLink(clipboard) || maybeParseOrgOutline(clipboard);
-                item_pasteFromOrg.hidden   = !showPaste;
-                item_pasteFromOrg.disabled = !showPaste;
+                if (event.target.triggerNode.id === "PlacesToolbarItems" || event.target.triggerNode.className === "bookmark-item") {
+                    var item_pasteFromOrg = event.target.ownerDocument.getElementById("placesContext_pasteFromOrg");
+                    var clipboard = getDataFromClipboard();
+                    var showPaste = maybeParseOrgLink(clipboard) || maybeParseOrgOutline(clipboard);
+                    item_pasteFromOrg.hidden   = !showPaste;
+                    item_pasteFromOrg.disabled = !showPaste;
+                }
             });
         },
 
