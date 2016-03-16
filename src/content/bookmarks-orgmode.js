@@ -7,8 +7,8 @@ var copyBookmarksAsOrgmode = (function() {
         if (!placesNode) {
             return "";
         }
-        if (typeof level == "undefined") {
-            var level = 1;
+        if (typeof level === "undefined") {
+            level = 1;
         }
 
         var orgString = "\n";
@@ -22,15 +22,16 @@ var copyBookmarksAsOrgmode = (function() {
             orgString += nodeTitle;
 
             var folderUri = placesNode.uri.replace(/place:folder=([^&]+).*/g, "$1");
+            var folderID;
             if (folderUri == "TOOLBAR") {
-                var folderID = PlacesUtils.toolbarFolderId;
+                folderID = PlacesUtils.toolbarFolderId;
             }
             else {
-                var folderID = placesNode.itemId;
+                folderID = placesNode.itemId;
             }
 
             var children = PlacesUtils.getFolderContents(folderID).root;
-            for ( var i = 0; i < children.childCount; i++ ) {
+            for ( i = 0; i < children.childCount; i++ ) {
                 orgString += getOrgStringForNode(children.getChild(i), level+1);
             }
         }
@@ -48,7 +49,7 @@ var copyBookmarksAsOrgmode = (function() {
 
     function getDataFromClipboard() {
         var trans = Cc["@mozilla.org/widget/transferable;1"].createInstance(Ci.nsITransferable);
-        trans.init(null)
+        trans.init(null);
         trans.addDataFlavor("text/unicode");
 
         Services.clipboard.getData(trans, Services.clipboard.kGlobalClipboard);
@@ -143,11 +144,12 @@ var copyBookmarksAsOrgmode = (function() {
 
         pasteFromOrg: function() {
             var placesNode = PlacesUIUtils.getViewForNode(document.popupNode).selectedNode;
+            var folderID;
             if (placesNode) {
-                var folderID = placesNode.itemId;
+                folderID = placesNode.itemId;
             }
             else if (document.popupNode.id == "PlacesToolbarItems") {
-                var folderID = PlacesUtils.toolbarFolderId;
+                folderID = PlacesUtils.toolbarFolderId;
             }
             else {
                 console.log(document.popupNode);
@@ -155,7 +157,7 @@ var copyBookmarksAsOrgmode = (function() {
             }
             parseOrgString(getDataFromClipboard(), folderID);
         }
-    }
+    };
 })();
 
 window.addEventListener("load", function load(event) {
@@ -163,4 +165,4 @@ window.addEventListener("load", function load(event) {
     copyBookmarksAsOrgmode.init();
 });
 
-};
+}
